@@ -9,13 +9,13 @@ WORKDIR /app
 
 # Installing dependencies
 COPY ./package.json /app
-RUN npm install --legacy-peer-deps
+RUN npm install --silent
 
 # Copying all the files in our project
 COPY . .
 
-# Make port 3000 available to the world outside this container
-EXPOSE 3000
+# Make port 3001 available to the world outside this container
+EXPOSE 3001
 
 # Starting our application
 CMD node index.js
