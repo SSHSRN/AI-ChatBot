@@ -9,13 +9,13 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA97WZ_FUO0bSpREsP7S4oJMVdZQNsXrB0",
-  authDomain: "ai-chatbot-auth.firebaseapp.com",
-  projectId: "ai-chatbot-auth",
-  storageBucket: "ai-chatbot-auth.appspot.com",
-  messagingSenderId: "439851236428",
-  appId: "1:439851236428:web:cd4169c5088e155e0e48e9",
-  measurementId: "G-ZEY9SPNP1Z"
+  apiKey: "AIzaSyBlxvZzY8o2etPum7Xe0EPr6kn0Mtjoyws",
+  authDomain: "ai-chatbot-bb4f1.firebaseapp.com",
+  projectId: "ai-chatbot-bb4f1",
+  storageBucket: "ai-chatbot-bb4f1.appspot.com",
+  messagingSenderId: "324773607590",
+  appId: "1:324773607590:web:e3d6ae8ac7406b09eadc67",
+  measurementId: "G-WCHJS85G33"
 };
 
 // Initialize Firebase

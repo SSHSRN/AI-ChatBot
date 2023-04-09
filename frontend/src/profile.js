@@ -38,7 +38,7 @@ function Profile() {
         const msgObj = {
             "prompt": message,
         }
-        await axios.post("http://localhost:3000/application/ask", msgObj).then((res) => {
+        await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-uc.a.run.app/application/ask", msgObj).then((res) => {
             setSpinner(false);
             console.log(res);
             console.log(res.data);
