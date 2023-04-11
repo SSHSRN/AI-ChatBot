@@ -82,6 +82,9 @@ function Profile() {
     }
 
     const sendMessage = async (e) => {
+        if(message === "" || message === null){
+            return;
+        }
         setSpinner(true);
         e.preventDefault();
         console.log(message);
