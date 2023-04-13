@@ -37,21 +37,22 @@ bot.on('message', async (ctx) => {
     )
 });
 // Launch the bot
-bot.launch({
-    webhook: {
-      // Public domain for webhook; e.g.: example.com
-      domain: 'https://telegramgptchatbot.000webhostapp.com/',
+// bot.launch({
+//     webhook: {
+//       // Public domain for webhook; e.g.: example.com
+//       domain: 'https://telegramgptchatbot.000webhostapp.com/',
   
-      // Port to listen on; e.g.: 8080
-      port: 3000,
+//       // Port to listen on; e.g.: 8080
+//       port: 3000,
   
-      // Optional path to listen for.
-      // `bot.secretPathComponent()` will be used by default
-      //   hookPath: webhookPath,
+//       // Optional path to listen for.
+//       // `bot.secretPathComponent()` will be used by default
+//       //   hookPath: webhookPath,
   
-      // Optional secret to be sent back in a header for security.
-      // e.g.: `crypto.randomBytes(64).toString("hex")`
-    //   secretToken: randomAlphaNumericString,
-    },
-  });  
+//       // Optional secret to be sent back in a header for security.
+//       // e.g.: `crypto.randomBytes(64).toString("hex")`
+//     //   secretToken: randomAlphaNumericString,
+//     },
+//   });  
+    bot.launch();
 
