@@ -201,7 +201,7 @@ function Profile() {
             if (selfFixable === "") {
                 if (message === "yes" || message === "no") {
                     setSelfFixable(message);
-                    if(message === "yes"){
+                    if (message === "yes") {
                         document.getElementById("msg-box").innerHTML += `
                         <div class="bot-msg">
                         <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
@@ -210,14 +210,29 @@ function Profile() {
                         setSpinner(false);
                         return;
                     }
-                    else{
+                    else {
                         document.getElementById("msg-box").innerHTML += `
                         <div class="bot-msg">
                         <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
                         <p>Thanks for your feedback!</p>
                         </div>`;
-                        console.log("User refused to fix...Details are as follows: ",feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable, githubID);
+                        console.log("User refused to fix...Details are as follows: ", feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable);
+                        let issueObj = {
+                            name: feedbackName,
+                            email: feedbackEmail,
+                            type: feedbackType,
+                            message: feedbackMessage,
+                        }
+                        console.log(issueObj);
+                        setFeedbackName("");
+                        setFeedbackEmail("");
+                        setFeedbackType("");
+                        setFeedbackMessage("");
+                        setSelfFixable("");
+                        setFeedback(false);
+                        setGithubID("");
                         setSpinner(false);
+                        await axios.post("http://localhost:3000/application/issue", issueObj);
                         return;
                     }
                 }
@@ -231,15 +246,32 @@ function Profile() {
                 setSpinner(false);
                 return;
             }
-            if(selfFixable === "yes"){
-                if(githubID === ""){
-                    setGithubID(message);
+            if (selfFixable === "yes") {
+                if (githubID === "") {
+                    await setGithubID(message);
                     document.getElementById("msg-box").innerHTML += `
                     <div class="bot-msg">
                     <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
                     <p>Thanks for your feedback!</p>
                     </div>`;
-                    console.log("Details are as follows: ",feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable, githubID);
+                    console.log("Details are as follows: ", feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable, githubID);
+                    let assigneeObj = {
+                        userName: feedbackName,
+                        email: feedbackEmail,
+                        type: feedbackType,
+                        message: feedbackMessage,
+                        githubID: message
+                    }
+                    console.log(assigneeObj);
+                    setFeedbackName("");
+                    setFeedbackEmail("");
+                    setFeedbackType("");
+                    setFeedbackMessage("");
+                    setSelfFixable("");
+                    setFeedback(false);
+                    setGithubID("");
+                    let res = await axios.post("http://localhost:3000/application/issue/assignee", assigneeObj);
+                    res ? console.log(res) : console.log("Error");
                     setSpinner(false);
                     return;
                 }
