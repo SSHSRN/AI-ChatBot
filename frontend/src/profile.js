@@ -14,6 +14,13 @@ function Profile() {
     const [message, setMessage] = useState("");
     const [spinner, setSpinner] = useState(false);
     const [sample, setSample] = useState(true);
+    const [feedback, setFeedback] = useState(false);
+    const [feedbackName, setFeedbackName] = useState("");
+    const [feedbackEmail, setFeedbackEmail] = useState("");
+    const [feedbackType, setFeedbackType] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [selfFixable, setSelfFixable] = useState("");
+    const [githubID, setGithubID] = useState("");
 
     const logout = () => {
         auth.signOut();
@@ -48,8 +55,8 @@ function Profile() {
             <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
             <img src=${res.data.image_link} alt="profile" class="resImage"/>
             </div>`;
-            var element = document.getElementById("msg-box");
-            element.scrollTop = element.scrollHeight;
+                var element = document.getElementById("msg-box");
+                element.scrollTop = element.scrollHeight;
             }
             else {
                 msg = res.data;
@@ -81,8 +88,22 @@ function Profile() {
         return result;
     }
 
+    const checkName = (name) => {
+        if (name === "" || name === null || name.length < 3) {
+            return false;
+        }
+        return true;
+    }
+
+    const checkEmail = (email) => {
+        if (email === "" || email === null || email.length < 3 || !email.includes("@") || !email.includes(".")) {
+            return false;
+        }
+        return true;
+    }
+
     const sendMessage = async (e) => {
-        if(message === "" || message === null){
+        if (message === "" || message === null) {
             return;
         }
         setSpinner(true);
@@ -99,6 +120,131 @@ function Profile() {
         console.log(randomString);
         var element = document.getElementById("msg-box");
         element.scrollTop = element.scrollHeight;
+        if (message === "/feedback") {
+            setFeedback(true);
+            document.getElementById("msg-box").innerHTML += `
+            <div class="bot-msg">
+            <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+            <p>Thanks for taking your time to suggest a new feature or report a bug. To proceed, we need some more details from you. <br> What is your Name?</p>
+            </div>`;
+            setSpinner(false);
+            return;
+        }
+        if (feedback) {
+            if (feedbackName === "") {
+                if (checkName(message)) {
+                    setFeedbackName(message);
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>What is your email?</p>
+                </div>`;
+                }
+                else {
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Enter a valid name!</p>
+                </div>`;
+                }
+                setSpinner(false);
+                return;
+            }
+            if (feedbackEmail === "") {
+                if (checkEmail(message)) {
+                    setFeedbackEmail(message);
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>What is your feedback type?(bug/feature)</p>
+                </div>`;
+                }
+                else {
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Enter a valid email!</p>
+                </div>`;
+                }
+                setSpinner(false);
+                return;
+            }
+            if (feedbackType === "") {
+                if (message === "bug" || message === "feature") {
+                    setFeedbackType(message);
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Give a detailed explanation about the suggested feature or the bug found</p>
+                </div>`;
+                }
+                else {
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Enter a valid feedback type!</p>
+                </div>`;
+                }
+                setSpinner(false);
+                return;
+            }
+            if (feedbackMessage === "") {
+                setFeedbackMessage(message);
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Can you fix this bug or add this feature yourself? (yes/no)</p>
+                </div>`;
+                setSpinner(false);
+                return;
+            }
+            if (selfFixable === "") {
+                if (message === "yes" || message === "no") {
+                    setSelfFixable(message);
+                    if(message === "yes"){
+                        document.getElementById("msg-box").innerHTML += `
+                        <div class="bot-msg">
+                        <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                        <p>Enter your GitHub username</p>
+                        </div>`;
+                        setSpinner(false);
+                        return;
+                    }
+                    else{
+                        document.getElementById("msg-box").innerHTML += `
+                        <div class="bot-msg">
+                        <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                        <p>Thanks for your feedback!</p>
+                        </div>`;
+                        console.log("User refused to fix...Details are as follows: ",feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable, githubID);
+                        setSpinner(false);
+                        return;
+                    }
+                }
+                else {
+                    document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Enter a valid answer!</p>
+                </div>`;
+                }
+                setSpinner(false);
+                return;
+            }
+            if(selfFixable === "yes"){
+                if(githubID === ""){
+                    setGithubID(message);
+                    document.getElementById("msg-box").innerHTML += `
+                    <div class="bot-msg">
+                    <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                    <p>Thanks for your feedback!</p>
+                    </div>`;
+                    console.log("Details are as follows: ",feedbackName, feedbackEmail, feedbackType, feedbackMessage, selfFixable, githubID);
+                    setSpinner(false);
+                    return;
+                }
+            }
+        }
         await sendApiRequest(message, randomString);
     }
 
@@ -198,6 +344,9 @@ function Profile() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="FeedbackMessage">
+                <h2>If you want to report a bug or request a new feature, use the /feedback command in the chat...</h2>
             </div>
         </div>
     )
