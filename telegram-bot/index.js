@@ -2,7 +2,13 @@ const axios = require('axios');
 const { Telegraf } = require('telegraf');
 require('dotenv').config();
 
-const bot = new Telegraf(process.env.telegram_bot_api_key);
+const bot = new Telegraf(process.env.TELEGRAM_BOT_API_KEY);
+// set telegram webhook
+// bot.telegram.setWebhook('https://asia-south1-dotted-axle-382514.cloudfunctions.net/telegramBot').then(() => {
+//     console.log("webhook set");
+// }).catch((err) => {
+//     console.log(err);
+// });
 console.log("bot started");
 
 bot.start((ctx) => ctx.reply(`Hello ${ctx.chat.first_name} \n\nI am a bot with the power of ChatGPT.`));
@@ -24,7 +30,7 @@ bot.on('message', async (ctx) => {
     const msgObj = {
         "prompt": question,
     }
-    await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-uc.a.run.app/application/ask", msgObj).then(
+    await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/ask", msgObj).then(
         (res) => {
             console.log(res.data);
             if (res.data.image_requested) {
@@ -37,22 +43,13 @@ bot.on('message', async (ctx) => {
     )
 });
 // Launch the bot
-// bot.launch({
-//     webhook: {
-//       // Public domain for webhook; e.g.: example.com
-//       domain: 'https://telegramgptchatbot.000webhostapp.com/',
+exports.botHandler = async (req, res) => {
+    try {
+      await bot.handleUpdate(req.body);
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error(error);
+      res.status(400).send('Error');
+    }
+  };
   
-//       // Port to listen on; e.g.: 8080
-//       port: 3000,
-  
-//       // Optional path to listen for.
-//       // `bot.secretPathComponent()` will be used by default
-//       //   hookPath: webhookPath,
-  
-//       // Optional secret to be sent back in a header for security.
-//       // e.g.: `crypto.randomBytes(64).toString("hex")`
-//     //   secretToken: randomAlphaNumericString,
-//     },
-//   });  
-    bot.launch();
-

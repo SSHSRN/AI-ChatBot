@@ -15,11 +15,3 @@ services:
       - "3001:3000"
     depends_on:
       - backend
-  telegram-bot:
-    build:
-      context: ./telegram-bot
-    container_name: telegram-bot
-    ports:
-      - "3002:3000"
-    depends_on:
-      - backend
