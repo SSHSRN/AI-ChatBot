@@ -51,8 +51,6 @@ function Profile() {
         }
         await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/ask", msgObj).then((res) => {
             setSpinner(false);
-            console.log(res);
-            console.log(res.data);
             if (res.data.image_requested) {
                 document.getElementById("msg-box").innerHTML += `
             <div class="bot-msg">
@@ -83,16 +81,15 @@ function Profile() {
         })
     }
 
-    const startAkinator = async () => {
+    const startAkinator = async (randomString) => {
         await axios.post("http://localhost:3000/application/akinator/start").then((res) => {
-            console.log(res.data);
             setAkinator(true);
             document.getElementById("msg-box").innerHTML += `
             <div class="bot-msg">
             <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
-            <p id="typewriter_0"></p>
+            <p id="typewriter_0${randomString}"></p>
             </div>`;
-            new Typewriter(`#typewriter_0`, {
+            new Typewriter(`#typewriter_0${randomString}`, {
                 strings: res.data.question,
                 autoStart: true,
                 loop: false,
@@ -104,20 +101,18 @@ function Profile() {
         })
     }
 
-    const akinatorGuess = async (guess) => {
+    const akinatorGuess = async (guess, randomString) => {
         const guessObj = {
             "guess": guess,
         }
         await axios.post("http://localhost:3000/application/akinator/guess", guessObj).then(async(res) => {
-            console.log(res.data);
-            console.log(res.data.guess);
             if(res.data.guess!=="" && res.data.guess!==undefined && res.data.guess!==null){
                 document.getElementById("msg-box").innerHTML += `
                 <div class="bot-msg">
                 <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
-                <p id="typewriter_${akinatorCount}"></p>
+                <p id="typewriter_${akinatorCount}${randomString}"></p>
                 </div>`;
-                new Typewriter(`#typewriter_${akinatorCount}`, {
+                new Typewriter(`#typewriter_${akinatorCount}${randomString}`, {
                     strings: "Is "+res.data.guess+" the animal you were thinking of?",
                     autoStart: true,
                     loop: false,
@@ -127,13 +122,12 @@ function Profile() {
                 setAkinatorCount(akinatorCount + 1);
             }
             else if (res.data.question) {
-                console.log("count: " + akinatorCount);
                 document.getElementById("msg-box").innerHTML += `
                 <div class="bot-msg">
                 <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
-                <p id="typewriter_${akinatorCount}"></p>
+                <p id="typewriter_${akinatorCount}${randomString}"></p>
                 </div>`;
-                new Typewriter(`#typewriter_${akinatorCount}`, {
+                new Typewriter(`#typewriter_${akinatorCount}${randomString}`, {
                     strings: res.data.question,
                     autoStart: true,
                     loop: false,
@@ -146,9 +140,9 @@ function Profile() {
                 document.getElementById("msg-box").innerHTML += `
                 <div class="bot-msg">
                 <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
-                <p id="typewriter_${akinatorCount}"></p>
+                <p id="typewriter_${akinatorCount}${randomString}"></p>
                 </div>`;
-                new Typewriter(`#typewriter_${akinatorCount}`, {
+                new Typewriter(`#typewriter_${akinatorCount}${randomString}`, {
                     strings: res.data,
                     autoStart: true,
                     loop: false,
@@ -189,7 +183,6 @@ function Profile() {
         }
         setSpinner(true);
         e.preventDefault();
-        console.log(message);
         document.getElementById("input-chat").value = "";
         document.getElementById("msg-box").innerHTML += `
         <div class="user-msg">
@@ -198,7 +191,6 @@ function Profile() {
         </div>`;
         const characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         const randomString = generateRandomString(10, characterSet);
-        console.log(randomString);
         var element = document.getElementById("msg-box");
         element.scrollTop = element.scrollHeight;
         if (message === "/help") {
@@ -317,7 +309,6 @@ function Profile() {
                             type: feedbackType,
                             message: feedbackMessage,
                         }
-                        console.log(issueObj);
                         setFeedbackName("");
                         setFeedbackEmail("");
                         setFeedbackType("");
@@ -356,7 +347,6 @@ function Profile() {
                         message: feedbackMessage,
                         githubID: message
                     }
-                    console.log(assigneeObj);
                     setFeedbackName("");
                     setFeedbackEmail("");
                     setFeedbackType("");
@@ -396,14 +386,13 @@ function Profile() {
                 return;
             }
             if (message === "/start") {
-                await startAkinator();
+                await startAkinator(randomString);
                 setAkinatorStarted(true);
                 setSpinner(false);
                 return;
             }
             if (akinatorStarted && akinatorCount < 20) {
                 if(akinatorGuessMade && message === "yes") {
-                    console.log(randomString);
                     document.getElementById("msg-box").innerHTML += `
                     <div class="bot-msg">
                     <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
@@ -417,7 +406,6 @@ function Profile() {
                     return;
                 }
                 else if(akinatorGuessMade && message === "no") {
-                    console.log(randomString);
                     document.getElementById("msg-box").innerHTML += `
                     <div class="bot-msg">
                     <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
@@ -431,8 +419,7 @@ function Profile() {
                     return;
                 }
                 else if (message === "yes" || message === "no") {
-                    console.log(randomString);
-                    await akinatorGuess(message);
+                    await akinatorGuess(message, randomString);
                     setSpinner(false);
                     return;
                 }
@@ -464,16 +451,12 @@ function Profile() {
     }
 
     const ClearHistory = () => {
-        console.log("clear");
         const divs = document.getElementById('msg-box');
         const ele = divs.getElementsByTagName('div');
-        console.log(ele.length);
         while (divs.firstChild) {
             divs.removeChild(divs.firstChild);
         }
-        console.log(ele.length);
         if (ele.length === 0) {
-            console.log("empty");
             document.getElementById("msg-box").innerHTML += `
                 <div class="bot-msg">
                 <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
@@ -485,13 +468,11 @@ function Profile() {
 
     const OnscreenQuestion = (e) => {
         RemovePlaceholder();
-        console.log(e.target.getAttribute("value"));
         var data = e.target.getAttribute("value");
         setMessage(data);
         document.getElementById("input-chat").value = data;
         const divs = document.getElementById('msg-box');
         const ele = divs.getElementsByTagName('div');
-        console.log(ele.length);
         setSample(false);
     }
 
@@ -538,8 +519,6 @@ function Profile() {
                         </TextAnimation.Slide>
                         <textarea placeholder="" className="chatbot-input" id="input-chat" onChange={
                             (e) => {
-                                // check if enter key is pressed.
-                                console.log(e);
                                 setMessage(e.target.value);
                                 RemovePlaceholder();
                             }
@@ -550,7 +529,6 @@ function Profile() {
                             {spinner === true ? <div className="spinner"></div> : <GrSend className="chatbot-send-btn" onClick={
                                 async (e) => {
                                     await setSample(false);
-                                    console.log("sample: " + sample);
                                     sendMessage(e);
                                 }
                             } />}
