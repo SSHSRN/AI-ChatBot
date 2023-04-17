@@ -15,8 +15,10 @@ const octokit = new Octokit({
   auth: process.env.PERSONAL_ACCESS_TOKEN,
 });
 
+// Global Variables
 const owner = "SSHSRN";
 const repo = "AI-ChatBot";
+var akinatorGuessString = "";
 
 const getRes = async (openai, userPrompt) => {
   let res = await openai.createCompletion({
@@ -122,6 +124,29 @@ const create_issue_with_assignee = async (req, res) => {
   res.send({
     issue_creation: "success"
   });
+};
+
+const start_akinator = async (req, res) => {
+  console.log(req.body);
+  let message = "We are now playing a game of Akinator on the category of animals. You have 20 more questions to ask. Reply with either a yes/no question to narrow down the search or guess the animal. Reply with a JSON object with a key as 'guess' and the value as the animal you are thinking of, another key as 'confidence' and the value as the confidence level of your guess and another key as 'question' and the value as the question you want to ask. For example, {\"guess\":\"dog\",\"confidence\":\"0.8\",\"question\":\"Does it have four legs?\"}. If you are making a guess of an animal, make the confidence value as 1 and send back the json.";
+  const result = await getRes(openai, message);
+  console.log(result);
+  console.log("line134",JSON.parse(result));
+  console.log(JSON.parse(result).question);
+  akinatorGuessString = "We are now playing a game of Akinator on the category of animals. You have 20 more questions to ask. Reply with either a yes/no question to narrow down the search or guess the animal. Reply with either a yes/no question to narrow down the search or guess the animal. Reply with a JSON object with a key as 'guess' and the value as the animal you are thinking of, another key as 'confidence' and the value as the confidence level of your guess and another key as 'question' and the value as the question you want to ask. For example, {\"guess\":\"dog\",\"confidence\":\"0.8\",\"question\":\"Does it have four legs?\"}. If you are making a guess of an animal, make the confidence value as 1 and send back the json. You have the following clues: ";
+  akinatorGuessString += JSON.parse(result).question;
+  res.send(result);
+}
+
+const akinator_guess = async (req, res) => {
+  console.log(req.body);
+  console.log("akinatorGuessString: ", akinatorGuessString);
+  console.log("guess: ",req.body.guess);
+  akinatorGuessString += req.body.guess+". ";
+  const result = await getRes(openai, akinatorGuessString);
+  console.log("result: ", result);
+  akinatorGuessString += JSON.parse(result).question+" ";
+  res.send(result);
 }
 
 module.exports = {
@@ -130,4 +155,6 @@ module.exports = {
   get_image_response,
   create_issue,
   create_issue_with_assignee,
+  start_akinator,
+  akinator_guess
 }

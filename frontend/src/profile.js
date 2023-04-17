@@ -21,6 +21,10 @@ function Profile() {
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [selfFixable, setSelfFixable] = useState("");
     const [githubID, setGithubID] = useState("");
+    const [akinator, setAkinator] = useState(false);
+    const [akinatorStarted, setAkinatorStarted] = useState(false);
+    const [akinatorCount, setAkinatorCount] = useState(0);
+    const [akinatorGuessMade, setAkinatorGuessMade] = useState(false);
 
     const logout = () => {
         auth.signOut();
@@ -79,6 +83,83 @@ function Profile() {
         })
     }
 
+    const startAkinator = async () => {
+        await axios.post("http://localhost:3000/application/akinator/start").then((res) => {
+            console.log(res.data);
+            setAkinator(true);
+            document.getElementById("msg-box").innerHTML += `
+            <div class="bot-msg">
+            <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
+            <p id="typewriter_0"></p>
+            </div>`;
+            new Typewriter(`#typewriter_0`, {
+                strings: res.data.question,
+                autoStart: true,
+                loop: false,
+                delay: 50,
+            });
+            setAkinatorCount(akinatorCount + 1);
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+
+    const akinatorGuess = async (guess) => {
+        const guessObj = {
+            "guess": guess,
+        }
+        await axios.post("http://localhost:3000/application/akinator/guess", guessObj).then(async(res) => {
+            console.log(res.data);
+            console.log(res.data.guess);
+            if(res.data.guess!=="" && res.data.guess!==undefined && res.data.guess!==null){
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
+                <p id="typewriter_${akinatorCount}"></p>
+                </div>`;
+                new Typewriter(`#typewriter_${akinatorCount}`, {
+                    strings: "Is "+res.data.guess+" the animal you were thinking of?",
+                    autoStart: true,
+                    loop: false,
+                    delay: 50,
+                });
+                setAkinatorGuessMade(true);
+                setAkinatorCount(akinatorCount + 1);
+            }
+            else if (res.data.question) {
+                console.log("count: " + akinatorCount);
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
+                <p id="typewriter_${akinatorCount}"></p>
+                </div>`;
+                new Typewriter(`#typewriter_${akinatorCount}`, {
+                    strings: res.data.question,
+                    autoStart: true,
+                    loop: false,
+                    delay: 50,
+                });
+                // Increment the count
+                setAkinatorCount(akinatorCount + 1);
+            }
+            else {
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
+                <p id="typewriter_${akinatorCount}"></p>
+                </div>`;
+                new Typewriter(`#typewriter_${akinatorCount}`, {
+                    strings: res.data,
+                    autoStart: true,
+                    loop: false,
+                    delay: 50,
+                });
+            }
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+
     function generateRandomString(length, characterSet) {
         let result = '';
         for (let i = 0; i < length; i++) {
@@ -120,6 +201,19 @@ function Profile() {
         console.log(randomString);
         var element = document.getElementById("msg-box");
         element.scrollTop = element.scrollHeight;
+        if (message === "/help") {
+            document.getElementById("msg-box").innerHTML += `
+            <div class="bot-msg">
+            <img src="https://cdn-icons-png.flaticon.com/512/4944/4944377.png" alt="profile" class="userimg"/>
+            <p>Here are some commands you can use to interact with me.<br>
+            <b>/help</b> - To get a list of commands.<br>
+            <b>/feedback</b> - To give feedback or report a bug.<br>
+            <b>/play</b> - To play the game of Akinator.<br>
+            </p>
+            </div>`;
+            setSpinner(false);
+            return;
+        }
         if (message === "/feedback") {
             setFeedback(true);
             document.getElementById("msg-box").innerHTML += `
@@ -277,6 +371,95 @@ function Profile() {
                 }
             }
         }
+        if (message === "/play") {
+            document.getElementById("msg-box").innerHTML += `
+            <div class="bot-msg">
+            <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+            <p>Welcome to the game of <strong>Akinator</strong>!<br> I will try to guess the <strong>Animal</strong> you are thinking of in a maximum of 20 questions.<br> Enter "yes" or "no" to answer my questions. Enter "quit" to exit the game.<br>Enter <strong>/start</strong> to start playing.</p>
+            </div>`;
+            setAkinator(true);
+            setSpinner(false);
+            return;
+        }
+        if (akinator) {
+            if (message === "quit") {
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Thanks for playing!</p>
+                </div>`;
+                setAkinator(false);
+                setAkinatorStarted(false);
+                setAkinatorGuessMade(false);
+                setAkinatorCount(0);
+                setSpinner(false);
+                return;
+            }
+            if (message === "/start") {
+                await startAkinator();
+                setAkinatorStarted(true);
+                setSpinner(false);
+                return;
+            }
+            if (akinatorStarted && akinatorCount < 20) {
+                if(akinatorGuessMade && message === "yes") {
+                    console.log(randomString);
+                    document.getElementById("msg-box").innerHTML += `
+                    <div class="bot-msg">
+                    <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                    <p>Yayy! I am right! I guessed your animal in <strong>${akinatorCount}</strong> questions. To play again, use the <strong>/play</strong> command.</p>
+                    </div>`;
+                    setAkinator(false);
+                    setAkinatorStarted(false);
+                    setAkinatorGuessMade(false);
+                    setAkinatorCount(0);
+                    setSpinner(false);
+                    return;
+                }
+                else if(akinatorGuessMade && message === "no") {
+                    console.log(randomString);
+                    document.getElementById("msg-box").innerHTML += `
+                    <div class="bot-msg">
+                    <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                    <p>Oops! I was wrong. I will try again. Enter <strong>/play</strong> to play again</p>
+                    </div>`;
+                    setAkinator(false);
+                    setAkinatorStarted(false);
+                    setAkinatorGuessMade(false);
+                    setAkinatorCount(0);
+                    setSpinner(false);
+                    return;
+                }
+                else if (message === "yes" || message === "no") {
+                    console.log(randomString);
+                    await akinatorGuess(message);
+                    setSpinner(false);
+                    return;
+                }
+                else {
+                    document.getElementById("msg-box").innerHTML += `
+                    <div class="bot-msg">
+                    <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                    <p>Enter a valid answer!</p>
+                    </div>`;
+                }
+                setSpinner(false);
+                return;
+            }
+            else if(akinatorCount >= 20) {
+                document.getElementById("msg-box").innerHTML += `
+                <div class="bot-msg">
+                <img src=https://cdn-icons-png.flaticon.com/512/4944/4944377.png alt="profile" class="userimg"/>
+                <p>Oops! I have used up all my questions. I will try again. Enter <strong>/play</strong> to play again</p>
+                </div>`;
+                setAkinator(false);
+                setAkinatorStarted(false);
+                setAkinatorGuessMade(false);
+                setAkinatorCount(0);
+                setSpinner(false);
+                return;
+            }
+        }
         await sendApiRequest(message, randomString);
     }
 
@@ -355,12 +538,10 @@ function Profile() {
                         </TextAnimation.Slide>
                         <textarea placeholder="" className="chatbot-input" id="input-chat" onChange={
                             (e) => {
-                                if (e.keyCode === 13) {
-                                    sendMessage(e);
-                                }
+                                // check if enter key is pressed.
+                                console.log(e);
                                 setMessage(e.target.value);
                                 RemovePlaceholder();
-                                console.log(message);
                             }
                         } >
                         </textarea>
@@ -378,7 +559,7 @@ function Profile() {
                 </div>
             </div>
             <div className="FeedbackMessage">
-                <h2>If you want to report a bug or request a new feature, use the /feedback command in the chat...</h2>
+                <h2>To get details about the special commands that are supported, use /help command...</h2>
             </div>
         </div>
     )
