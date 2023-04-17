@@ -522,7 +522,15 @@ function Profile() {
                                 setMessage(e.target.value);
                                 RemovePlaceholder();
                             }
-                        } >
+                        } onKeyDown={
+                            async (e) => {
+                                if (e.key === "Enter") {
+                                    await setSample(false);
+                                    sendMessage(e);
+                                }
+                            }
+                        }
+                         >
                         </textarea>
                         <div className="Button-Container">
                             <ImBin className="chatbot-attach-btn" onClick={() => { ClearHistory() }} />
