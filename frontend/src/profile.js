@@ -82,7 +82,7 @@ function Profile() {
     }
 
     const startAkinator = async (randomString) => {
-        await axios.post("http://localhost:3000/application/akinator/start").then((res) => {
+        await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/akinator/start").then((res) => {
             setAkinator(true);
             document.getElementById("msg-box").innerHTML += `
             <div class="bot-msg">
@@ -105,7 +105,7 @@ function Profile() {
         const guessObj = {
             "guess": guess,
         }
-        await axios.post("http://localhost:3000/application/akinator/guess", guessObj).then(async(res) => {
+        await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/akinator/guess", guessObj).then(async(res) => {
             if(res.data.guess!=="" && res.data.guess!==undefined && res.data.guess!==null){
                 document.getElementById("msg-box").innerHTML += `
                 <div class="bot-msg">
@@ -317,7 +317,7 @@ function Profile() {
                         setFeedback(false);
                         setGithubID("");
                         setSpinner(false);
-                        await axios.post("http://localhost:3000/application/issue", issueObj);
+                        await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/issue", issueObj);
                         return;
                     }
                 }
