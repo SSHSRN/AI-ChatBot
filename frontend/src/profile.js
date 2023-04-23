@@ -354,7 +354,7 @@ function Profile() {
                     setSelfFixable("");
                     setFeedback(false);
                     setGithubID("");
-                    let res = await axios.post("http://localhost:3000/application/issue/assignee", assigneeObj);
+                    let res = await axios.post("https://ai-chatbot-backend-vbtjd5yyqq-el.a.run.app/application/issue/assignee", assigneeObj);
                     res ? console.log(res) : console.log("Error");
                     setSpinner(false);
                     return;
